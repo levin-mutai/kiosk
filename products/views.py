@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets, pagination, status
 from rest_framework.response import Response
 from serializers import CreateProductsSerializer
-from models import Product
+from models import Product, Order
 
 
 class LargePagination(pagination.PageNumberPagination):
@@ -14,10 +14,19 @@ class LargePagination(pagination.PageNumberPagination):
 
 
 class ProductViews(generics.CreateAPIView):
+    """
+    Viewset to allows creation of products in the database.
+
+    """
+
     serializer_class = CreateProductsSerializer
     http_method_names = ["get", "post", "put", "delete"]
     pagination_class = LargePagination
     queryset = Product.objects.all()
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        return queryset
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -60,10 +69,14 @@ class OrderViewSet(viewsets.ModelViewSet):
     Allows creation, update and delete of orders
     """
 
-    queryset = Product.objects.all()
+    queryset = Order.objects.all()
     http_method_names = ["get", "post", "put", "delete"]
     serializer_class = CreateProductsSerializer
     pagination_class = LargePagination
+
+    def get_queryset(self):
+        queryset = Order.objects.all()
+        return queryset
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
