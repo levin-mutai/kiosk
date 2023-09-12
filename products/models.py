@@ -18,7 +18,8 @@ class Product(BaseModel):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     stock = models.IntegerField()
-    image_url = models.CharField(max_length=2083)
+    description = models.TextField()
+    image_url = models.CharField(max_length=2083, null=True, blank=True)
 
     class Meta:
         verbose_name = "Product"
