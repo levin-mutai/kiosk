@@ -8,7 +8,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProductCreateSerializer(serializers.ModelSerializer):
+class CreateProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
@@ -28,7 +28,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OrderCreateSerializer(serializers.ModelSerializer):
+class CreateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
