@@ -5,10 +5,7 @@ from serializers import CreateProductsSerializer
 from models import Product
 
 
-# Create your views here.
-
-
-class LargePAgination(pagination.PageNumberPagination):
+class LargePagination(pagination.PageNumberPagination):
     """Class for custom Pagination"""
 
     page_size = 10
@@ -18,7 +15,8 @@ class LargePAgination(pagination.PageNumberPagination):
 
 class ProductViews(generics.CreateAPIView):
     serializer_class = CreateProductsSerializer
-    pagination_class = LargePAgination
+    http_method_names = ["get", "post", "put", "delete"]
+    pagination_class = LargePagination
     queryset = Product.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -63,8 +61,9 @@ class OrderViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Product.objects.all()
+    http_method_names = ["get", "post", "put", "delete"]
     serializer_class = CreateProductsSerializer
-    pagination_class = LargePAgination
+    pagination_class = LargePagination
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
