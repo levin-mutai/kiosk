@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,10 +28,24 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+GITHUB_OIDC_CLIENT_ID = config('GITHUB_OIDC_CLIENT_ID')
+GITHUB_OIDC_CLIENT_SECRET = config('GITHUB_OIDC_CLIENT_SECRET')
+GITHUB_OIDC_REDIRECT_URI = config('GITHUB_OIDC_REDIRECT_URI')
+GITHUB_OIDC_ENDPOINT = config('GITHUB_OIDC_ENDPOINT')
+
 
 LOGIN_URL = "/accounts/login/"
 
+
 # Application definition
+
+REST_FRAMEWORK = {
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'kiosk.oidc_auth.CustomOIDCAuthentication',
+        # Other authentication classes...
+    ],
+}
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -41,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "products",
     "oidc_provider",
 ]
 
@@ -56,6 +72,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "kiosk.urls"
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#     ),
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         # ...
+#         'oidc_auth.authentication.JSONWebTokenAuthentication',
+#         'oidc_auth.authentication.BearerTokenAuthentication',
+#     ),
+# }
 
 TEMPLATES = [
     {
