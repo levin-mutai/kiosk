@@ -45,6 +45,10 @@ class Order(BaseModel):
     def total_price(self):
         """Used to dynamicaly to calculate the price of the order made"""
         return sum(x.total_price for x in self.products.all())
+    def order_products(self):
+        # Retrieve all OrderProduct objects related to this Order instance
+        return OrderProduct.objects.filter(order=self)
+    
 class OrderProduct(BaseModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     
@@ -65,8 +69,6 @@ class OrderProduct(BaseModel):
         verbose_name_plural = "Order_Product"
         unique_together = ("order", "product")
 
-    def __str__(self):
-        return self.name
 
     def get_absolute_url(self):
         return reverse("Orders_detail", kwargs={"pk": self.pk})
