@@ -27,7 +27,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
     product = GetOrderProductSerializer()
     class Meta:
         model = OrderProduct
-        fields = ("product", "quantity","total_price")
+        fields = ("id","product", "quantity","total_price")
 
 class CreateOrderProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,7 +36,7 @@ class CreateOrderProductSerializer(serializers.ModelSerializer):
 class UpdateOrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProduct
-        fields = ("quantity")
+        fields = ("product", "quantity")
         
     
 class OrderSerializer(serializers.ModelSerializer):
@@ -57,6 +57,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class CreateOrderSerializer(serializers.ModelSerializer):
     products = CreateOrderProductSerializer(many=True)
+    
     
     class Meta:
         model = Order

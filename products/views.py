@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets, pagination, status
 from rest_framework.response import Response
-from .serializers import CreateOrderProductSerializer, CreateProductSerializer,CreateOrderSerializer,OrderSerializer,ProductSerializer
+from .serializers import CreateOrderProductSerializer, CreateProductSerializer,CreateOrderSerializer,OrderSerializer,ProductSerializer, UpdateOrderProductSerializer
 from .models import OrderProduct, Product, Order
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.contrib.auth.models import User
@@ -126,7 +126,7 @@ class OrderProductViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [AllowAny]
     queryset = OrderProduct.objects.all()
-    http_method_names = ["get", "post", "put", "delete","options"]
+    http_method_names = ["put", "delete","options"]
     serializer_class = CreateOrderProductSerializer
     pagination_class = LargePagination
 
@@ -137,7 +137,8 @@ class OrderProductViewSet(viewsets.ModelViewSet):
     def update(self, request,pk=None, *args, **kwargs):
         partial = True
         instance = self.get_object()
-        serializer = CreateOrderProductSerializer(instance, data=request.data, partial=partial)
+        
+        serializer = UpdateOrderProductSerializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
@@ -145,3 +146,10 @@ class OrderProductViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data) 
+    def destroy(self, request, pk=None):
+        try:
+            order_product = self.get_object() 
+            order_product.delete() 
+            return Response({"message": "Order product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except OrderProduct.DoesNotExist:
+            return Response("Order product not found", status=status.HTTP_404_NOT_FOUND)
