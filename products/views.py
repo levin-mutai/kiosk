@@ -5,7 +5,7 @@ from .serializers import CreateOrderProductSerializer, CreateProductSerializer,C
 from .models import OrderProduct, Product, Order
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.contrib.auth.models import User
-
+from django.views.decorators.cache import cache_page
 
 class LargePagination(pagination.PageNumberPagination):
     """Class for custom Pagination"""
@@ -41,7 +41,7 @@ class ProductViews(viewsets.ModelViewSet):
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
-  
+    @cache_page(60 * 15, cache_key = 'product_list') 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = ProductSerializer(queryset, many=True)
@@ -101,7 +101,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 "order_id": order.id
             }, status=status.HTTP_201_CREATED, headers=headers
         )
-  
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = OrderSerializer(queryset, many=True)

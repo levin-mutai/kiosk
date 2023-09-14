@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import Order, Product,OrderProduct
 
 
+#===========================================Product Serializer ========================================
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -18,13 +21,15 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "description",
             "image_url",
         )
-class GetOrderProductSerializer(ProductSerializer):
+class GetProductSerializer(ProductSerializer):
     class Meta:
         model = ProductSerializer.Meta.model
         exclude = ['created_at', 'updated_at']
 
+#==========================================Ordered Product Serializer ========================================
+
 class OrderProductSerializer(serializers.ModelSerializer):
-    product = GetOrderProductSerializer()
+    product = GetProductSerializer()
     class Meta:
         model = OrderProduct
         fields = ("id","product", "quantity","total_price")
@@ -37,7 +42,8 @@ class UpdateOrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProduct
         fields = ("product", "quantity")
-        
+
+#==========================================Order Serializer ========================================     
     
 class OrderSerializer(serializers.ModelSerializer):
     products = serializers.SerializerMethodField(method_name="get_products")
