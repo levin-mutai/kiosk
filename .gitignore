@@ -5,3 +5,4 @@
 **/.pytest_cache
 **/oidc.key
 **/update_env.py
+**/oidc_auth.py
