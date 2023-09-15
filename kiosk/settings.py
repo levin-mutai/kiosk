@@ -16,6 +16,18 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL='user_auth.User'
+
+OAUTH2_PROVIDER = {
+    "OIDC_ENABLED": True,
+    "SCOPES": {
+        "openid": "OpenID Connect scope",
+        # ... any other scopes that you use
+    },
+    # Enable and configure RP-Initiated Logout
+    "OIDC_RP_INITIATED_LOGOUT_ENABLED": True,
+    "OIDC_RP_INITIATED_LOGOUT_ALWAYS_PROMPT": True,
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -58,8 +70,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "oauth2_provider",
     "corsheaders",
     "rest_framework",
+    "user_auth",
     "products",
     "oidc_provider",
 ]
@@ -77,16 +91,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "kiosk.urls"
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         # ...
-#         'oidc_auth.authentication.JSONWebTokenAuthentication',
-#         'oidc_auth.authentication.BearerTokenAuthentication',
-#     ),
-# }
 
 TEMPLATES = [
     {

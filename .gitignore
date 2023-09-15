@@ -3,3 +3,5 @@
 **/.vscode
 **/__pycache__/
 **/.pytest_cache
+**/oidc.key
+**/update_env.py

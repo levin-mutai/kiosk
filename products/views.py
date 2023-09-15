@@ -41,7 +41,7 @@ class ProductViews(viewsets.ModelViewSet):
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
-    @cache_page(60 * 15, cache_key = 'product_list') 
+    @cache_page(60 * 15, key_prefix=  'product_list') 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = ProductSerializer(queryset, many=True)
@@ -85,9 +85,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         products = request.data.pop('products')
-        user = request.data.pop('user_id')
+        user = request.data.pop('customer')
 
-        order = Order.objects.create(user_id=User.objects.get(id = user))
+        order = Order.objects.create(customer=User.objects.get(id = user))
         for product in products:
             serialize = CreateOrderProductSerializer(data=product)
             serialize.is_valid(raise_exception=True)
