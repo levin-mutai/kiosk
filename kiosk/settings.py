@@ -55,13 +55,13 @@ LOGIN_URL = "/accounts/login/"
 
 # Application definition
 
-REST_FRAMEWORK = {
+# REST_FRAMEWORK = {
     
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'kiosk.oidc_auth.CustomOIDCAuthentication',
-        # Other authentication classes...
-    ],
-}
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'kiosk.oidc_auth.CustomOIDCAuthentication',
+#         # Other authentication classes...
+#     ],
+# }
 
 INSTALLED_APPS = [
     "django.contrib.admin",
