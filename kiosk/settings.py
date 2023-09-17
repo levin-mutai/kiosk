@@ -16,7 +16,7 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-AUTH_USER_MODEL='user_auth.User'
+AUTH_USER_MODEL = "user_auth.User"
 
 OAUTH2_PROVIDER = {
     "OIDC_ENABLED": True,
@@ -34,20 +34,20 @@ OAUTH2_PROVIDER = {
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG',default=False)
+DEBUG = config("DEBUG", default=False)
 
-ENVIRONENT =  config('ENVIRONENT',default = "DEVELOP")
+ENVIRONENT = config("ENVIRONENT", default="DEVELOP")
 
 
 ALLOWED_HOSTS = []
 
-GITHUB_OIDC_CLIENT_ID = config('GITHUB_OIDC_CLIENT_ID')
-GITHUB_OIDC_CLIENT_SECRET = config('GITHUB_OIDC_CLIENT_SECRET')
-GITHUB_OIDC_REDIRECT_URI = config('GITHUB_OIDC_REDIRECT_URI')
-GITHUB_OIDC_ENDPOINT = config('GITHUB_OIDC_ENDPOINT')
+GITHUB_OIDC_CLIENT_ID = config("GITHUB_OIDC_CLIENT_ID")
+GITHUB_OIDC_CLIENT_SECRET = config("GITHUB_OIDC_CLIENT_SECRET")
+GITHUB_OIDC_REDIRECT_URI = config("GITHUB_OIDC_REDIRECT_URI")
+GITHUB_OIDC_ENDPOINT = config("GITHUB_OIDC_ENDPOINT")
 
 
 LOGIN_URL = "/accounts/login/"
@@ -56,7 +56,7 @@ LOGIN_URL = "/accounts/login/"
 # Application definition
 
 # REST_FRAMEWORK = {
-    
+
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
 #         'kiosk.oidc_auth.CustomOIDCAuthentication',
 #         # Other authentication classes...
@@ -123,18 +123,16 @@ if ENVIRONENT == "DEVELOP" or ENVIRONENT == "TEST":
     }
 
 elif ENVIRONENT == "PRODUCTION":
-
-
     DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.postgresql_psycopg2",
-                "NAME": config('DB_NAME'),
-                "USER": config('DB_USER'),
-                "PASSWORD": config('DB_PASSWORD'),
-                "HOST": config('DB_HOST'),
-                "PORT": config('DB_PORT'),
-            }
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": config("DB_NAME"),
+            "USER": config("DB_USER"),
+            "PASSWORD": config("DB_PASSWORD"),
+            "HOST": config("DB_HOST"),
+            "PORT": config("DB_PORT"),
         }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
