@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, Product,OrderProduct
+from .models import Order, Product,OrderProduct,Customer
 
 
 #===========================================Product Serializer ========================================
@@ -80,3 +80,20 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 
         return order
    
+
+   #=============================================Customer Serializer==========================================
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = "__all__"
+
+class CreateCustomerSerilaizer(CustomerSerializer):
+    class Meta:
+        model = CustomerSerializer.Meta.model
+        exclude = ['created_at', 'updated_at',"id"]
+
+class UpdateCustomerSerializer(CreateCustomerSerilaizer):
+    class Meta:
+        model = CreateCustomerSerilaizer.Meta.model
+        exclude = ['user']
