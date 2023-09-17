@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets, pagination, status
 from rest_framework.response import Response
-from .serializers import CreateOrderProductSerializer, CreateProductSerializer,CreateOrderSerializer,OrderSerializer,ProductSerializer, UpdateOrderProductSerializer
-from .models import OrderProduct, Product, Order
+from .serializers import (
+    CreateOrderProductSerializer, CreateProductSerializer,CreateOrderSerializer,OrderSerializer,ProductSerializer, UpdateOrderProductSerializer,CustomerSerializer,UpdateCustomerSerializer,
+)
+from .models import OrderProduct, Product, Order,Customer
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.contrib.auth.models import User
 from django.views.decorators.cache import cache_page
@@ -15,6 +17,41 @@ class LargePagination(pagination.PageNumberPagination):
     max_page_size = 100
 
 
+class CustomerViews(viewsets.ModelViewSet):
+    serializer_class = CustomerSerializer
+    queryset = Customer.objects.all()
+    http_method_names= ["get","post","put"]
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def update(self, request, pk=None):
+        partial = True
+        instance = self.get_object()
+        serializer = UpdateCustomerSerializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+    
+    def retrieve(self,request,  pk=None):
+        
+        serializer = CustomerSerializer(self.get_object())
+        return Response(serializer.data)
+    
+    
+
+
+
 class ProductViews(viewsets.ModelViewSet):
     """
     Viewset to allows creation of products in the database.
@@ -24,7 +61,7 @@ class ProductViews(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "put", "delete"]
     pagination_class = LargePagination
     queryset = Product.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 
@@ -73,7 +110,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     """
     Allows creation, update and delete of orders
     """
-    permission_classes = [AllowAny]
+
+    permission_classes = [IsAuthenticated]
     queryset = Order.objects.all()
     http_method_names = ["get", "post", "put", "delete","options"]
     serializer_class = CreateOrderSerializer
@@ -124,7 +162,7 @@ class OrderProductViewSet(viewsets.ModelViewSet):
     """
     Allows creation, update and delete of order products
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     queryset = OrderProduct.objects.all()
     http_method_names = ["put", "delete","options"]
     serializer_class = CreateOrderProductSerializer
