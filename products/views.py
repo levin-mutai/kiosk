@@ -2,12 +2,20 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets, pagination, status
 from rest_framework.response import Response
 from .serializers import (
-    CreateOrderProductSerializer, CreateProductSerializer,CreateOrderSerializer,OrderSerializer,ProductSerializer, UpdateOrderProductSerializer,CustomerSerializer,UpdateCustomerSerializer,
+    CreateOrderProductSerializer,
+    CreateProductSerializer,
+    CreateOrderSerializer,
+    OrderSerializer,
+    ProductSerializer,
+    UpdateOrderProductSerializer,
+    CustomerSerializer,
+    UpdateCustomerSerializer,
 )
-from .models import OrderProduct, Product, Order,Customer
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from .models import OrderProduct, Product, Order, Customer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from django.views.decorators.cache import cache_page
+
 
 class LargePagination(pagination.PageNumberPagination):
     """Class for custom Pagination"""
@@ -20,56 +28,9 @@ class LargePagination(pagination.PageNumberPagination):
 class CustomerViews(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     queryset = Customer.objects.all()
-    http_method_names= ["get","post","put"]
+    http_method_names = ["get", "post", "put"]
     permission_classes = [IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
-    def update(self, request, pk=None):
-        partial = True
-        instance = self.get_object()
-        serializer = UpdateCustomerSerializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, "_prefetched_objects_cache", None):
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
-    
-    def retrieve(self,request,  pk=None):
-        
-        serializer = CustomerSerializer(self.get_object())
-        return Response(serializer.data)
-    
-    
-
-
-
-class ProductViews(viewsets.ModelViewSet):
-    """
-    Viewset to allows creation of products in the database.
-
-    """
-    serializer_class = CreateProductSerializer
-    http_method_names = ["get", "post", "put", "delete"]
-    pagination_class = LargePagination
-    queryset = Product.objects.all()
-    permission_classes = [IsAuthenticated]
-
-
-
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        return queryset
-
- 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -78,12 +39,57 @@ class ProductViews(viewsets.ModelViewSet):
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
-    @cache_page(60 * 15, key_prefix=  'product_list') 
+
+    def update(self, request, pk=None):
+        partial = True
+        instance = self.get_object()
+        serializer = UpdateCustomerSerializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        serializer = CustomerSerializer(self.get_object())
+        return Response(serializer.data)
+
+
+class ProductViews(viewsets.ModelViewSet):
+    """
+    Viewset to allows creation of products in the database.
+
+    """
+
+    serializer_class = CreateProductSerializer
+    http_method_names = ["get", "post", "put", "delete"]
+    pagination_class = LargePagination
+    queryset = Product.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    @cache_page(60 * 15, key_prefix="product_list")
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)
- 
+
     def update(self, request, *args, **kwargs):
         partial = True
         instance = self.get_object()
@@ -95,11 +101,11 @@ class ProductViews(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
- 
+
     def retrieve(self, request, pk=None):
         serializer = self.serializer_class(self.get_object())
         return Response(serializer.data)
- 
+
     def destroy(self, request, pk=None):
         serializer = self.serializer_class(self.get_object())
         self.perform_destroy(serializer)
@@ -113,7 +119,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAuthenticated]
     queryset = Order.objects.all()
-    http_method_names = ["get", "post", "put", "delete","options"]
+    http_method_names = ["get", "post", "put", "delete", "options"]
     serializer_class = CreateOrderSerializer
     pagination_class = LargePagination
 
@@ -122,22 +128,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        products = request.data.pop('products')
-        user = request.data.pop('customer')
+        products = request.data.pop("products")
+        user = request.data.pop("customer")
 
-        order = Order.objects.create(customer=User.objects.get(id = user))
+        order = Order.objects.create(customer=User.objects.get(id=user))
         for product in products:
             serialize = CreateOrderProductSerializer(data=product)
             serialize.is_valid(raise_exception=True)
-            OrderProduct.objects.create(order=order, product=Product.objects.get(id=product['product']), quantity=product['quantity'])
+            OrderProduct.objects.create(
+                order=order,
+                product=Product.objects.get(id=product["product"]),
+                quantity=product["quantity"],
+            )
 
         headers = self.get_success_headers(order.id)
-        
+
         return Response(
-            {
-                "message": "Order created successfully",
-                "order_id": order.id
-            }, status=status.HTTP_201_CREATED, headers=headers
+            {"message": "Order created successfully", "order_id": order.id},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
         )
 
     def list(self, request, *args, **kwargs):
@@ -151,20 +160,24 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None):
         try:
-            order = self.get_object() 
-            order.delete() 
-            return Response({"message": "Order deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            order = self.get_object()
+            order.delete()
+            return Response(
+                {"message": "Order deleted successfully"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
         except Order.DoesNotExist:
             return Response("Order not found", status=status.HTTP_404_NOT_FOUND)
-        
+
 
 class OrderProductViewSet(viewsets.ModelViewSet):
     """
     Allows creation, update and delete of order products
     """
+
     permission_classes = [IsAuthenticated]
     queryset = OrderProduct.objects.all()
-    http_method_names = ["put", "delete","options"]
+    http_method_names = ["put", "delete", "options"]
     serializer_class = CreateOrderProductSerializer
     pagination_class = LargePagination
 
@@ -172,22 +185,28 @@ class OrderProductViewSet(viewsets.ModelViewSet):
         queryset = OrderProduct.objects.all()
         return queryset
 
-    def update(self, request,pk=None, *args, **kwargs):
+    def update(self, request, pk=None, *args, **kwargs):
         partial = True
         instance = self.get_object()
-        
-        serializer = UpdateOrderProductSerializer(instance, data=request.data, partial=partial)
+
+        serializer = UpdateOrderProductSerializer(
+            instance, data=request.data, partial=partial
+        )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
         if getattr(instance, "_prefetched_objects_cache", None):
             instance._prefetched_objects_cache = {}
 
-        return Response(serializer.data) 
+        return Response(serializer.data)
+
     def destroy(self, request, pk=None):
         try:
-            order_product = self.get_object() 
-            order_product.delete() 
-            return Response({"message": "Order product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            order_product = self.get_object()
+            order_product.delete()
+            return Response(
+                {"message": "Order product deleted successfully"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
         except OrderProduct.DoesNotExist:
             return Response("Order product not found", status=status.HTTP_404_NOT_FOUND)
