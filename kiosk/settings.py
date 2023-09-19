@@ -20,8 +20,11 @@ AUTH_USER_MODEL = "user_auth.User"
 
 OAUTH2_PROVIDER = {
     "OIDC_ENABLED": True,
+    # "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24,
     "SCOPES": {
         "openid": "OpenID Connect scope",
+        "read": "Read scope description",
+        "write": "Write scope description",
         # ... any other scopes that you use
     },
     # Enable and configure RP-Initiated Logout
@@ -50,18 +53,25 @@ GITHUB_OIDC_REDIRECT_URI = config("GITHUB_OIDC_REDIRECT_URI")
 GITHUB_OIDC_ENDPOINT = config("GITHUB_OIDC_ENDPOINT")
 
 
-LOGIN_URL = "/accounts/login/"
+# LOGIN_URL = "/accounts/login/"
+LOGIN_URL = "/admin/login/"
 
 
 # Application definition
 
 # REST_FRAMEWORK = {
-
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'kiosk.oidc_auth.CustomOIDCAuthentication',
-#         # Other authentication classes...
-#     ],
+#     "DEFAULT_AUTHENTICATION_CLASSES": (
+#         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+#     ),
+#     # ...
 # }
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        # ...
+    ),
+    # ...
+}
 
 INSTALLED_APPS = [
     "django.contrib.admin",

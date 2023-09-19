@@ -20,7 +20,5 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("products.urls")),
-    path('auth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path("openid/", include("oidc_provider.urls", namespace="oidc_provider")),
-    path("api-auth/", include("rest_framework.urls")),
+    path("auth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
 ]

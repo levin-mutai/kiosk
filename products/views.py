@@ -15,6 +15,15 @@ from .models import OrderProduct, Product, Order, Customer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from django.views.decorators.cache import cache_page
+from django.conf import settings
+from user_auth.models import User
+from django.db.models import Q
+from django.db.models import Sum
+from django.db.models import Count
+from django.utils.decorators import method_decorator
+
+# User = settings.AUTH_USER_MODEL
+# User = settings.AUTH_USER_MODEL
 
 
 class LargePagination(pagination.PageNumberPagination):
@@ -69,7 +78,7 @@ class ProductViews(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "put", "delete"]
     pagination_class = LargePagination
     queryset = Product.objects.all()
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticatedOrTokenHasScope]
 
     def get_queryset(self):
         queryset = Product.objects.all()
@@ -84,7 +93,7 @@ class ProductViews(viewsets.ModelViewSet):
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
 
-    @cache_page(60 * 15, key_prefix="product_list")
+    @method_decorator(cache_page(60 * 15, key_prefix="product_list"))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = ProductSerializer(queryset, many=True)
@@ -129,9 +138,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         products = request.data.pop("products")
-        user = request.data.pop("customer")
+        customer = request.data.pop("customer")
 
-        order = Order.objects.create(customer=User.objects.get(id=user))
+        customer_inst = Customer.objects.get(id=customer)
+        order = Order.objects.create(customer=customer_inst)
+        # u = User.objects.get(id=user)
+
         for product in products:
             serialize = CreateOrderProductSerializer(data=product)
             serialize.is_valid(raise_exception=True)
@@ -150,7 +162,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         )
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+        print(request.user)
+        queryset = Order.objects.filter(
+            customer=Customer.objects.get(user=request.user.id)
+        )
+        print(request.user.id)
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
 
