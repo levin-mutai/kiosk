@@ -1,14 +1,14 @@
 # Kiosk.Backend (Savannah Informatics)
 
-Backend Engineer (Junior) Test
+This project was developed as part of an interview evaluation process with Savannah Informatics.
 
 # Read The Docs
 
-## Read Using Swagger (Read & Test)
+## Swagger
 
 [https://kiosk-api.azurewebsites.net/]()
 
-## Read Uisng Redocs (Read)
+## Redocs
 
 [https://kiosk-api.azurewebsites.net/redoc]()
 
