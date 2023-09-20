@@ -37,6 +37,5 @@ jobs:
     - name: Run Tests
       run: |
           coverage run -m pytest
-          coverage report
     - name: Build the Docker image
       run: docker build .  --tag kiosk:latest
