@@ -20,7 +20,7 @@ This project was developed as part of an interview evaluation process with Savan
 
 ![deployment](assets/databaseERD.png)
 
-# Run Locally without Docker
+# Run Locally 
 
 1. create a virtual environement
 
@@ -48,7 +48,7 @@ python3 manage.py runserver
 
 ```
 
-# Run Locally with Docker
+# Run with Docker
 
 ```bash
 docker-compose  up --build
