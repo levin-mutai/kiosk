@@ -137,9 +137,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        products = request.data.pop("products")
-        customer = request.data.pop("customer")
-
+        mutable_data = request.data.copy()
+        products = mutable_data.pop("products")
+        customer = mutable_data.pop("customer")
+        if customer is list:
+            raise ValueError("This is the error being generated")
         customer_inst = Customer.objects.get(id=customer)
         order = Order.objects.create(customer=customer_inst)
         # u = User.objects.get(id=user)

@@ -1,0 +1,50 @@
+version: "3.4"
+
+services:
+  kiosk:
+    image: kiosk
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8000:8000
+
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:14.1-alpine
+    container_name: Kiosk_DB
+    restart: always
+    env_file:
+      - db.env
+    ports:
+      - "5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6382:6382"
+    volumes:
+      - cache:/var/lib/redis/data
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A kiosk worker -l info
+    depends_on:
+      - db
+      - redis
+      - kiosk
+
+volumes:
+  db:
+    driver: local
+  cache:
+    driver: local
