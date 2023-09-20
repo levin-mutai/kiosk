@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 
@@ -20,7 +21,7 @@ AUTH_USER_MODEL = "user_auth.User"
 
 OAUTH2_PROVIDER = {
     "OIDC_ENABLED": True,
-    # "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24,
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 28800,
     "SCOPES": {
         "openid": "OpenID Connect scope",
         "read": "Read scope description",
@@ -45,12 +46,16 @@ DEBUG = config("DEBUG", default=False)
 ENVIRONENT = config("ENVIRONENT", default="DEVELOP")
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"]
 
 GITHUB_OIDC_CLIENT_ID = config("GITHUB_OIDC_CLIENT_ID")
 GITHUB_OIDC_CLIENT_SECRET = config("GITHUB_OIDC_CLIENT_SECRET")
 GITHUB_OIDC_REDIRECT_URI = config("GITHUB_OIDC_REDIRECT_URI")
 GITHUB_OIDC_ENDPOINT = config("GITHUB_OIDC_ENDPOINT")
+
+
+OAUTH_CLIENT_ID = config("CLIENT_ID")
+OAUTH_CLIENT_SECRET = config("CLIENT_SECRET")
 
 
 # LOGIN_URL = "/accounts/login/"
@@ -59,12 +64,6 @@ LOGIN_URL = "/admin/login/"
 
 # Application definition
 
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": (
-#         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-#     ),
-#     # ...
-# }
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
@@ -86,10 +85,12 @@ INSTALLED_APPS = [
     "user_auth",
     "products",
     "oidc_provider",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -100,6 +101,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "kiosk.urls"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 TEMPLATES = [
@@ -124,11 +127,18 @@ WSGI_APPLICATION = "kiosk.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if ENVIRONENT == "DEVELOP" or ENVIRONENT == "TEST":
+if ENVIRONENT == "DEVELOP":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+elif ENVIRONENT == "TEST":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "test.sqlite3",
         }
     }
 
@@ -136,9 +146,9 @@ elif ENVIRONENT == "PRODUCTION":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": config("DB_NAME"),
-            "USER": config("DB_USER"),
-            "PASSWORD": config("DB_PASSWORD"),
+            "NAME": config("POSTGRES_DB"),
+            "USER": config("POSTGRES_USER"),
+            "PASSWORD": config("POSTGRES_PASSWORD"),
             "HOST": config("DB_HOST"),
             "PORT": config("DB_PORT"),
         }
@@ -178,9 +188,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+MEDIA_URL = "media/"
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+CELERY_RESULT_BACKEND = "redis://redis:6382/0"
+CELERY_CACHE_BACKEND = "redis://redis:6382/0"
+
+
+# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
+
+
+CELERY_TIMEZONE = "Africa/Nairobi"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_TASK_SERRIALIZER = "json"
