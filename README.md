@@ -6,11 +6,11 @@ This project was developed as part of an interview evaluation process with Savan
 
 ## Swagger
 
-[https://kiosk-api.azurewebsites.net/]()
+[Swagger Documentation Link]()
 
 ## Redocs
 
-[https://kiosk-api.azurewebsites.net/redoc]()
+[Redocs Link]()
 
 ## PostMan Collection
 
