@@ -38,4 +38,4 @@ jobs:
       run: |
           pytest -rP
     - name: Build the Docker image
-      run: docker build .  --tag Kiosk:latest
+      run: docker build .  --tag kiosk:latest
