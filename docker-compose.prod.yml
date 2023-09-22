@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   kiosk:
-    image: kiosk
+    image: kiosk:latest
     build:
       context: .
       dockerfile: ./Dockerfile
