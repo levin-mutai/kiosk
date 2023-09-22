@@ -16,7 +16,7 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /app
 COPY . /app
 
-COPY .env .env
+# COPY .env .env
 
 RUN python manage.py makemigrations
 
