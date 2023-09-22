@@ -78,7 +78,7 @@ coverage report
 
 ## lanuages and Frameworks
 
-- [Django (Python)](https://fastapi.tiangolo.com/)
+- [Django Rest (Python)](https://www.django-rest-framework.org/)
   Django REST framework is a powerful and flexible toolkit for building Web **APIs** with Python 3.7+ based on standard Python.
 
 ## Testing & Code Coverage
