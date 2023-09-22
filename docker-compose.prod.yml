@@ -18,9 +18,9 @@ services:
     container_name: Kiosk_DB
     restart: always
     environment:
-      - POSTGRES_DB=${{secrets.POSTGRES_DB}}
-      - POSTGRES_USER=${{secrets.POSTGRES_USER}}
-      - POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432"
     volumes:
