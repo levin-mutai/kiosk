@@ -64,3 +64,4 @@ gunicorn
 whitenoise
 drf-yasg
 coreapi
+redis

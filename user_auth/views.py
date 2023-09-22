@@ -39,8 +39,9 @@ class UserLoginView(generics.CreateAPIView):
                 expiration_datetime = timezone.now() + timezone.timedelta(hours=8)
 
                 # Generate an OAuth2 access token
-                application = Application.objects.filter(name="Kiosk")
-                if not application:
+                try:
+                    application = Application.objects.get(name="Kiosk")
+                except Application.DoesNotExist:
                     application = Application.objects.create(
                         name="Test_app",
                         user=user,

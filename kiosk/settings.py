@@ -192,16 +192,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-CELERY_RESULT_BACKEND = "redis://redis:6382/0"
-CELERY_CACHE_BACKEND = "redis://redis:6382/0"
-
-
-# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
-
-
+# Celery settings
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_TIMEZONE = "Africa/Nairobi"
 CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_BROKER_URL = "redis://redis:6379/0"
 CELERY_TASK_SERRIALIZER = "json"
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_TIMEZONE = TIME_ZONE

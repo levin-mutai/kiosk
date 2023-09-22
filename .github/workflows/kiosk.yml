@@ -2,47 +2,45 @@ name: Kiosk CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 env:
   POSTGRES_USER: ${{secrets.POSTGRES_USER}}
   POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
   POSTGRES_DB: ${{secrets.POSTGRES_DB}}
   ENVIRONMENT: ${{secrets.ENVIRONMENT}}
-  DEBUG : ${{secrets.DEBUG}}
-  CREDENTIAL : ${{secrets.CREDENTIAL}}
-  CODE_VERIFIER : ${{secrets.CODE_VERIFIER}}
-  CLIENT_SECRET : ${{secrets.CLIENT_SECRET}}
-  CLIENT_ID : ${{secrets.CLIENT_ID}}
-  AFRICASTALKING_USERNANE : ${{secrets.AFRICASTALKING_USERNANE}}
-  AFRICASTALKING_API : ${{secrets.AFRICASTALKING_API}}
+  DEBUG: ${{secrets.DEBUG}}
+  CREDENTIAL: ${{secrets.CREDENTIAL}}
+  CODE_VERIFIER: ${{secrets.CODE_VERIFIER}}
+  CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+  CLIENT_ID: ${{secrets.CLIENT_ID}}
+  AFRICASTALKING_USERNANE: ${{secrets.AFRICASTALKING_USERNANE}}
+  AFRICASTALKING_API: ${{secrets.AFRICASTALKING_API}}
   SECRET_KEY: ${{secrets.SECRET_KEY}}
-  
+
 jobs:
   build:
-
-    runs-on: ubuntu-latest     
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run Tests
-      run: |
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Tests
+        run: |
           coverage run -m pytest
-    - name: Build the Docker image
-      run: docker build -t sav4ner/kiosk:latest .
-      
-    - name: Log in to Docker Hub
-      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the Docker image
+        run: docker-compose -f docker-compose.prod.yaml build -t sav4ner/kiosk:latest .
 
-    - name: Push Docker image to Docker Hub
-      run: docker push sav4ner/kiosk:latest
+      - name: Log in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Push Docker image to Docker Hub
+        run: docker push sav4ner/kiosk:latest
